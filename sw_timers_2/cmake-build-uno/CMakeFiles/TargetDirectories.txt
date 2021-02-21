@@ -1,0 +1,5 @@
+/home/shivan/arduino_pio/sw_timers_2/cmake-build-uno/CMakeFiles/rebuild_cache.dir
+/home/shivan/arduino_pio/sw_timers_2/cmake-build-uno/CMakeFiles/Production.dir
+/home/shivan/arduino_pio/sw_timers_2/cmake-build-uno/CMakeFiles/edit_cache.dir
+/home/shivan/arduino_pio/sw_timers_2/cmake-build-uno/CMakeFiles/Debug.dir
+/home/shivan/arduino_pio/sw_timers_2/cmake-build-uno/CMakeFiles/Z_DUMMY_TARGET.dir

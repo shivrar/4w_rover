@@ -1,0 +1,2 @@
+/usr/bin/ar qc lib_Library.a  CMakeFiles/_Library.dir/src/Encoders.cpp.obj
+/usr/bin/ranlib lib_Library.a
