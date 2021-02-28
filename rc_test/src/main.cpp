@@ -11,10 +11,14 @@
 
 SemaphoreHandle_t ch_mutex;
 uint16_t a,b,c, ch[8];
-long commands[4];
+float commands[4];
 int i;
 
 const TickType_t _100ms = pdMS_TO_TICKS(100);
+
+float MapCommand(uint16_t x, uint16_t in_min, uint16_t in_max, float out_min, float out_max){
+  return static_cast<float>(x - in_min) * (out_max - out_min) / static_cast<float>(in_max - in_min) + out_min;
+}
 
 //void filter_rc();
 void TaskFilterRC(void*);
@@ -135,22 +139,23 @@ void TaskUpdateCommands(void *pvParameters)
 //      commands[2] = static_cast<long>(ch[1]);
 //      commands[3] = static_cast<long>(ch[3]);
 
-      commands[0] = static_cast<long>(ch[2]);
-      commands[1] = commands[0]*(map(static_cast<long>(ch[0]), 900.0, 2600.0, -1.0, 1.0)*MAX_LR_VEL);
-      commands[2] = commands[0]*(map(static_cast<long>(ch[1]), 900.0, 2600.0, -1.0, 1.0)*MAX_FORWARD_VEL);
-      commands[3] = commands[0]*(map(static_cast<long>(ch[3]), 900.0, 2600.0, -1.0, 1.0)*MAX_ANG_VEL);
+//      commands[0] = static_cast<long>(ch[2]);
+      commands[0] = MapCommand(ch[2], 900, 2000, 0.0, 1.0);
+      commands[1] = commands[0]*(MapCommand(ch[0], 0, 3000, -1.0, 1.0)*MAX_LR_VEL);
+      commands[2] = commands[0]*(MapCommand(ch[1], 0, 3000, -1.0, 1.0)*MAX_FORWARD_VEL);
+      commands[3] = commands[0]*(MapCommand(ch[3], 0, 3000, -1.0, 1.0)*MAX_ANG_VEL);
 
       Serial.print("throttle:");
-      Serial.print(commands[0]);
+      Serial.print(commands[0],4);
       Serial.print("\t");
       Serial.print("Left/Right:");
-      Serial.print(commands[1]);
+      Serial.print(commands[1],4);
       Serial.print("\t");
       Serial.print("Forward:");
-      Serial.print(commands[2]);
+      Serial.print(commands[2],4);
       Serial.print("\t");
       Serial.print("Yaw:");
-      Serial.print(commands[3]);
+      Serial.print(commands[3],4);
       Serial.print("\n");
 
       vTaskDelay(_100ms);
