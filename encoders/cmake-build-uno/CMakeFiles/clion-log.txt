@@ -1,5 +1,0 @@
-/home/shivan/clion-2019.2.2/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=uno -G "CodeBlocks - Unix Makefiles" /home/shivan/arduino_pio/encoders
-3.17.5
--- Configuring done
--- Generating done
--- Build files have been written to: /home/shivan/arduino_pio/encoders/cmake-build-uno

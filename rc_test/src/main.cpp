@@ -5,8 +5,13 @@
 #define NO_CMD_CHANNELS 4
 #define PPM_PIN 2
 
+#define MAX_LR_VEL 0.5
+#define MAX_FORWARD_VEL 0.5
+#define MAX_ANG_VEL 0.25
+
 SemaphoreHandle_t ch_mutex;
 uint16_t a,b,c, ch[8];
+long commands[4];
 int i;
 
 const TickType_t _100ms = pdMS_TO_TICKS(100);
@@ -82,6 +87,16 @@ void TaskFilterRC(void *pvParameters)
     if (xSemaphoreTake(ch_mutex, portMAX_DELAY) == pdPASS) {
       for (int g = 0; g < 8; g++) {
         ch[g] = max(min(2000, ch[g]), 900);
+        /*!
+         *
+         * ch[0] = roll
+         * ch[1] = pitch
+         * ch[2] = throttle
+         * ch[3] = yaw
+         *
+         * rest is TBD
+         *
+         * */
       }
     }
   }
@@ -91,30 +106,53 @@ void TaskUpdateCommands(void *pvParameters)
 {
   for(;;) {
     if (xSemaphoreTake(ch_mutex, portMAX_DELAY) == pdPASS) {
-      Serial.print("ch_1:");
-      Serial.print(ch[0]);
+//      Serial.print("ch_1:");
+//      Serial.print(ch[0]);
+//      Serial.print("\t");
+//      Serial.print("ch_2:");
+//      Serial.print(ch[1]);
+//      Serial.print("\t");
+//      Serial.print("ch_3:");
+//      Serial.print(ch[2]);
+//      Serial.print("\t");
+//      Serial.print("ch_4:");
+//      Serial.print(ch[3]);
+//      Serial.print("\t");
+//      Serial.print("ch_5:");
+//      Serial.print(ch[4]);
+//      Serial.print("\t");
+//      Serial.print("ch_6:");
+//      Serial.print(ch[5]);
+//      Serial.print("\t");
+//      Serial.print("ch_7:");
+//      Serial.print(ch[6]);
+//      Serial.print("\t");
+//      Serial.print("ch_8:");
+//      Serial.print(ch[7]);
+//      Serial.print("\n");
+//      commands[0] = static_cast<long>(ch[2]);
+//      commands[1] = static_cast<long>(ch[0]);
+//      commands[2] = static_cast<long>(ch[1]);
+//      commands[3] = static_cast<long>(ch[3]);
+
+      commands[0] = static_cast<long>(ch[2]);
+      commands[1] = commands[0]*(map(static_cast<long>(ch[0]), 900.0, 2600.0, -1.0, 1.0)*MAX_LR_VEL);
+      commands[2] = commands[0]*(map(static_cast<long>(ch[1]), 900.0, 2600.0, -1.0, 1.0)*MAX_FORWARD_VEL);
+      commands[3] = commands[0]*(map(static_cast<long>(ch[3]), 900.0, 2600.0, -1.0, 1.0)*MAX_ANG_VEL);
+
+      Serial.print("throttle:");
+      Serial.print(commands[0]);
       Serial.print("\t");
-      Serial.print("ch_2:");
-      Serial.print(ch[1]);
+      Serial.print("Left/Right:");
+      Serial.print(commands[1]);
       Serial.print("\t");
-      Serial.print("ch_3:");
-      Serial.print(ch[2]);
+      Serial.print("Forward:");
+      Serial.print(commands[2]);
       Serial.print("\t");
-      Serial.print("ch_4:");
-      Serial.print(ch[3]);
-      Serial.print("\t");
-      Serial.print("ch_5:");
-      Serial.print(ch[4]);
-      Serial.print("\t");
-      Serial.print("ch_6:");
-      Serial.print(ch[5]);
-      Serial.print("\t");
-      Serial.print("ch_7:");
-      Serial.print(ch[6]);
-      Serial.print("\t");
-      Serial.print("ch_8:");
-      Serial.print(ch[7]);
+      Serial.print("Yaw:");
+      Serial.print(commands[3]);
       Serial.print("\n");
+
       vTaskDelay(_100ms);
     }
   }
