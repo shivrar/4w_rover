@@ -26,7 +26,7 @@ namespace Encoders{
     }
   }
 
-  float Wheel::GetDistanceTurned() {
+  float Wheel::GetDistanceTurned() const {
     return static_cast<float>(rotations)/(16.0);
   }
 

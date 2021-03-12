@@ -7,14 +7,13 @@
 
 #include <Arduino.h>
 
-inline void test_print(){Serial.println("Testing");};
 namespace Encoders {
 
 class Wheel {
 public:
   Wheel(uint8_t out, uint16_t thresh);
 
-  float GetDistanceTurned();
+  float GetDistanceTurned() const;
 
   void Update(bool direction);
 
