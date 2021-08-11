@@ -79,8 +79,8 @@ void setup() {
 
   // Init Arduino serial
   Serial.begin(9600);
-
-  cd_motors = 2;
+  xTaskGetTickCount();
+  cd_motors = 1;
 
   // Wait for serial port to connect. Needed for native USB, on LEONARDO, MICRO, YUN, and other 32u4 based boards.
   while (!Serial) {
@@ -112,11 +112,11 @@ void setup() {
                            nullptr,
                            ChangeDirection);
 
-    if(enc_timer != nullptr)
-    {
-      xEncStarted  = xTimerStart(enc_timer,0);
-      while((xEncStarted != pdPASS)) {Serial.println("Uanble to start timer encoder");}
-    }
+//    if(enc_timer != nullptr)
+//    {
+////      xEncStarted  = xTimerStart(enc_timer,0);
+//      while((xEncStarted != pdPASS)) {Serial.println("Uanble to start timer encoder");}
+//    }
 
     if(dir_timer != nullptr)
     {
@@ -149,7 +149,10 @@ void setup() {
               nullptr );
 
   ch_mutex = xSemaphoreCreateBinary();
-  pinMode(PPM_PIN, INPUT_PULLUP);
+  pinMode(PPM_PIN, INPUT);
+  pinMode(3,OUTPUT);
+  digitalWrite(3, HIGH);
+
   if (ch_mutex != nullptr) {
     //if the semaphore was successful attach the interrupt
     cli();
@@ -165,7 +168,8 @@ void setup() {
 void loop() {}
 
 ISR(INT0_vect){
-  a=micros(); //store time value a when pin value falling
+  a=micros(); //store time value a when pin value falling //TODO: this will behave erratically so should take them out
+  //a = xTaskGetTickCount()/portTICK_PERIOD_MS;
   c=a-b;      //calculating time inbetween two peaks
   b=a;        //
   if(c>10000 || i>=8){
@@ -244,10 +248,10 @@ void TaskSpinMotors(void* pvParameters)
 {
   for (;;) {
     if (xSemaphoreTake(encoder_mutex, portMAX_DELAY)==pdPASS && cd_motors == 0) {
-      m1.TurnWheel(DIRECTION, MAX_POWER);
-      m2.TurnWheel(DIRECTION, MAX_POWER);
-      m3.TurnWheel(DIRECTION, MAX_POWER);
-      m4.TurnWheel(DIRECTION, MAX_POWER);
+      m1.TurnWheel(DIRECTION, MIN_SPEED);
+      m2.TurnWheel(DIRECTION, MIN_SPEED);
+      m3.TurnWheel(DIRECTION, MIN_SPEED);
+      m4.TurnWheel(DIRECTION, MIN_SPEED);
     }
     xSemaphoreGive(encoder_mutex);
     vTaskDelay(PERIOD_100MS);
@@ -290,6 +294,7 @@ void TaskUpdateCommands(void *pvParameters)
     if (xSemaphoreTake(ch_mutex, portMAX_DELAY) == pdPASS) {
 //      commands[0] = static_cast<long>(ch[2]);
       commands[0] = MapCommand(ch[2], 900, 2000, 0.0, 1.0);
+      //TODO: If throttle value is too large we can use that as an indicator that we have lost RC comms
       commands[1] = commands[0]*(MapCommand(ch[0], 0, 3000, -1.0, 1.0)*MAX_LR_VEL);
       commands[2] = -commands[0]*(MapCommand(ch[1], 0, 3000, -1.0, 1.0)*MAX_FORWARD_VEL);
       commands[3] = commands[0]*(MapCommand(ch[3], 0, 3000, -1.0, 1.0)*MAX_ANG_VEL);

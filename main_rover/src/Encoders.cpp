@@ -11,7 +11,6 @@ namespace Encoders{
   last_val(ReadRaw()),
   thresh(thresh),
   rotations(0){
-
   }
 
   int  Wheel::ReadRaw() const {
