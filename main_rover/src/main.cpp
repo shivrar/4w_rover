@@ -12,6 +12,7 @@
 
 //#include "Encoders.h"
 #include "Motors.h"
+#include "Kinematics.h"
 
 #define FORWARD HIGH
 #define REVERSE LOW
