@@ -1,3 +1,4 @@
 *.idea*
 *cmake-build-debug*
 *cmake-build-uno*
+*i2c*

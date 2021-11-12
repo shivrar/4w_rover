@@ -12,6 +12,7 @@
 
 //#include "Encoders.h"
 #include "Motors.h"
+#include "MPU6050.h"
 #include "Kinematics.h"
 
 #define FORWARD HIGH
@@ -48,6 +49,7 @@ Motor::Motor m2(M2,E2,A1,13);
 Motor::Motor m3(M3,E3,A2,32);
 Motor::Motor m4(M4,E4,A3,34);
 
+//MPU6050 accelgyro;
 
 float MapCommand(uint16_t x, uint16_t in_min, uint16_t in_max, float out_min, float out_max){
   return static_cast<float>(x - in_min) * (out_max - out_min) / static_cast<float>(in_max - in_min) + out_min;
